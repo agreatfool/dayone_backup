@@ -40,9 +40,12 @@ const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY,
 program.version(pkg.version)
     .description('Dayone2 backup application, supports only MacOS & Dayone2')
     .option('-d, --dest <dir>', 'directory of backup destination')
-    .option('-n, --name<string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
+    .option('-n, --dir_name<string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
+    .option('-m, --max_backups<number>', `max history backups remained, default is ${BACKUP_LIMIT}`)
     .parse(process.argv);
 const BACKUP_DEST = program.dest === undefined ? undefined : program.dest;
+const BACKUP_NAME = program.dir_name === undefined ? BACKUP_DIR_NAME : program.dir_name;
+const BACKUP_MAX_COUNT = program.max_backups === undefined ? BACKUP_LIMIT : program.max_backups;
 class DayOneBackup {
     constructor() {
         this._backupDest = '';
@@ -95,7 +98,7 @@ class DayOneBackup {
     _prepareBackupDest() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Preparing backup destination ...');
-            const backupDestBase = LibPath.join(BACKUP_DEST, BACKUP_DIR_NAME);
+            const backupDestBase = LibPath.join(BACKUP_DEST, BACKUP_NAME);
             const currentBackupFolder = moment().format('YYYYMMDD_HHmmss');
             this._backupDest = LibPath.join(backupDestBase, currentBackupFolder);
             if (!(yield LibFs.exists(backupDestBase))) {
@@ -106,8 +109,8 @@ class DayOneBackup {
                 // base destination exists, check sub dir count
                 const existingBackups = removeValue(yield LibFs.readdir(backupDestBase), '.DS_Store');
                 let deleteTargets = [];
-                if (existingBackups.length > BACKUP_LIMIT) {
-                    const delta = existingBackups.length - BACKUP_LIMIT + 1; // +1: also leave the room for new backup
+                if (existingBackups.length >= BACKUP_MAX_COUNT) {
+                    const delta = existingBackups.length - BACKUP_MAX_COUNT + 1; // +1: also leave the room for new backup
                     deleteTargets = existingBackups.slice(0, delta); // remove old backups
                 }
                 for (let deleteTarget of deleteTargets) {

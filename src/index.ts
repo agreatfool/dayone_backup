@@ -54,10 +54,13 @@ const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY,
 program.version(pkg.version)
     .description('Dayone2 backup application, supports only MacOS & Dayone2')
     .option('-d, --dest <dir>', 'directory of backup destination')
-    .option('-n, --name<string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
+    .option('-n, --dir_name<string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
+    .option('-m, --max_backups<number>', `max history backups remained, default is ${BACKUP_LIMIT}`)
     .parse(process.argv);
 
 const BACKUP_DEST = (program as any).dest === undefined ? undefined : (program as any).dest;
+const BACKUP_NAME = (program as any).dir_name === undefined ? BACKUP_DIR_NAME : (program as any).dir_name;
+const BACKUP_MAX_COUNT = (program as any).max_backups === undefined ? BACKUP_LIMIT : (program as any).max_backups;
 
 class DayOneBackup {
 
@@ -112,7 +115,7 @@ class DayOneBackup {
     private async _prepareBackupDest() {
         console.log('Preparing backup destination ...');
 
-        const backupDestBase = LibPath.join(BACKUP_DEST, BACKUP_DIR_NAME);
+        const backupDestBase = LibPath.join(BACKUP_DEST, BACKUP_NAME);
         const currentBackupFolder = moment().format('YYYYMMDD_HHmmss');
 
         this._backupDest = LibPath.join(backupDestBase, currentBackupFolder);
@@ -125,8 +128,8 @@ class DayOneBackup {
             const existingBackups = removeValue(await LibFs.readdir(backupDestBase), '.DS_Store');
 
             let deleteTargets = [];
-            if (existingBackups.length > BACKUP_LIMIT) {
-                const delta = existingBackups.length - BACKUP_LIMIT + 1; // +1: also leave the room for new backup
+            if (existingBackups.length >= BACKUP_MAX_COUNT) {
+                const delta = existingBackups.length - BACKUP_MAX_COUNT + 1; // +1: also leave the room for new backup
                 deleteTargets = existingBackups.slice(0, delta); // remove old backups
             }
 
