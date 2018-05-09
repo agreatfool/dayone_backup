@@ -39,7 +39,7 @@ DB File:
 =>
 /private/tmp/dayone_tmp/DayOneBackup.sqlite
 =>
-/${Dest}/${$BackupName}/DayOneBackup.sqlite
+/${Dest}/${$BackupName}/DayOne.sqlite
 
 Photos:
 /Users/???/Library/Group Containers/5U8NS4GX82.dayoneapp2/Data/Documents/DayOnePhotos/
