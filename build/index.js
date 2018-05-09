@@ -40,12 +40,12 @@ const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY,
 program.version(pkg.version)
     .description('Dayone2 backup application, supports only MacOS & Dayone2')
     .option('-d, --dest <dir>', 'directory of backup destination')
-    .option('-n, --dir_name<string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
-    .option('-m, --max_backups<number>', `max history backups remained, default is ${BACKUP_LIMIT}`)
+    .option('-n, --dir_name <string>', `directory name of backup files: $dest/$name/backup_files, default is "${BACKUP_DIR_NAME}"`)
+    .option('-m, --max_backups <number>', `max history backups remained, default is ${BACKUP_LIMIT}`)
     .parse(process.argv);
 const BACKUP_DEST = program.dest === undefined ? undefined : program.dest;
 const BACKUP_NAME = program.dir_name === undefined ? BACKUP_DIR_NAME : program.dir_name;
-const BACKUP_MAX_COUNT = program.max_backups === undefined ? BACKUP_LIMIT : program.max_backups;
+const BACKUP_MAX_COUNT = program.max_backups === undefined ? BACKUP_LIMIT : parseInt(program.max_backups);
 class DayOneBackup {
     constructor() {
         this._backupDest = '';
