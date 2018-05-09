@@ -1,4 +1,4 @@
-Day One 2 Backup
+Day One2 Backup
 ================
 
 Backup Day One2 data. Only MacOS & Day One2 supported.
