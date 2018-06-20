@@ -49,7 +49,7 @@ interface EntryRow {
     ZTEXT: string;
 }
 
-const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY, ZTEXT FROM ZENTRY WHERE ZGREGORIANYEAR >=${(new Date()).getFullYear()} ORDER BY ZGREGORIANMONTH DESC, ZGREGORIANDAY DESC LIMIT 1;`;
+const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY, ZTEXT FROM ZENTRY WHERE ZGREGORIANYEAR >=${(new Date()).getFullYear()} ORDER BY ZGREGORIANMONTH DESC, ZGREGORIANDAY DESC LIMIT 3;`;
 
 program.version(pkg.version)
     .description('Dayone2 backup application, supports only MacOS & Dayone2')
@@ -176,6 +176,7 @@ class DayOneBackup {
             'DayOne.sqlite.dayonelock'
         ];
         for (let file of backupFileList) {
+            console.log(LibPath.join(DAYONE_DOCUMENTS, file), LibPath.join(this._backupDest, file));
             await LibFs.copyFile(LibPath.join(DAYONE_DOCUMENTS, file), LibPath.join(this._backupDest, file));
         }
         console.log('DB files done ...');
@@ -188,7 +189,7 @@ class DayOneBackup {
             }
             return true;
         });
-        console.log('Photo files done ...');
+        console.log('Photo files copied, start packing & compressing photo files ...');
 
         await targzp({
             src: photosBackupPath,
@@ -206,25 +207,28 @@ class DayOneBackup {
 
     private async _displayLatestEntry() {
         console.log('Loading backup db: ', LibPath.join(this._backupDest, 'DayOne.sqlite'));
+
         let db = new sqlite3.Database(LibPath.join(this._backupDest, 'DayOne.sqlite'), (err) => {
             if (err) {
                 console.log(err);
             }
-            console.log('DB connected ...');
+            console.log('DB connected, Read latest 3 entries: ');
+
+            db.all(LATEST_ENTRY_SQL, [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+
+                const maxTextLength = 50;
+                rows.forEach((row) => {
+                    const latest = row as EntryRow;
+                    const text = latest.ZTEXT.length > maxTextLength ? latest.ZTEXT.substr(0, maxTextLength) + '...' : latest.ZTEXT;
+                    console.log(`----------\nEntry, Date: ${latest.ZGREGORIANYEAR}-${latest.ZGREGORIANMONTH}-${latest.ZGREGORIANDAY}\nText: '${text}'`);
+                });
+            });
+
+            db.close();
         });
-
-        db.all(LATEST_ENTRY_SQL, [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-
-            const maxTextLength = 50;
-            const latest = rows.shift() as EntryRow;
-            const text = latest.ZTEXT.length > maxTextLength ? latest.ZTEXT.substr(0, maxTextLength) + '...' : latest.ZTEXT;
-            console.log(`Last dayone entry: ${latest.ZGREGORIANYEAR}-${latest.ZGREGORIANMONTH}-${latest.ZGREGORIANDAY}\nText: '${text}'`);
-        });
-
-        db.close();
     }
 
 }
