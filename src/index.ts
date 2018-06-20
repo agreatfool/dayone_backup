@@ -148,6 +148,10 @@ class DayOneBackup {
     private async _backupFiles() {
         console.log('Backup files ...');
 
+        /**
+         * UPDATE 2018-06-20
+         * This logic has been changed, no longer using DayOneBackup.zip as the backup db source file.
+         * Since it always has some delay. Now using Document/*.sqlite directly.
         const backupFileList = {
             // from => to
             'DayOneBackup.sqlite': 'DayOne.sqlite',
@@ -161,6 +165,18 @@ class DayOneBackup {
             let destFile = backupFileList[sourceFile];
 
             await LibFs.copyFile(LibPath.join(BACKUP_TMP_DIR, sourceFile), LibPath.join(this._backupDest, destFile));
+        }
+        console.log('DB files done ...');
+        */
+
+        const backupFileList = [
+            'DayOne.sqlite',
+            'DayOne.sqlite-shm',
+            'DayOne.sqlite-wal',
+            'DayOne.sqlite.dayonelock'
+        ];
+        for (let file of backupFileList) {
+            await LibFs.copyFile(LibPath.join(DAYONE_DOCUMENTS, file), LibPath.join(this._backupDest, file));
         }
         console.log('DB files done ...');
 
