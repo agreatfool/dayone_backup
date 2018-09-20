@@ -36,7 +36,7 @@ const DAYONE_DEFAULT_BACKUP_FILE_NAME = 'DayOneBackup.zip';
 const BACKUP_LIMIT = 5;
 const BACKUP_DIR_NAME = 'Dayone2Backup';
 const BACKUP_TMP_DIR = '/tmp/dayone_tmp';
-const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY, ZTEXT FROM ZENTRY WHERE ZGREGORIANYEAR >=${(new Date()).getFullYear()} ORDER BY ZGREGORIANMONTH DESC, ZGREGORIANDAY DESC LIMIT 3;`;
+const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY, ZMARKDOWNTEXT FROM ZENTRY WHERE ZGREGORIANYEAR >=${(new Date()).getFullYear()} ORDER BY ZGREGORIANMONTH DESC, ZGREGORIANDAY DESC LIMIT 3;`;
 program.version(pkg.version)
     .description('Dayone2 backup application, supports only MacOS & Dayone2')
     .option('-d, --dest <dir>', 'directory of backup destination')
