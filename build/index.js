@@ -193,7 +193,7 @@ class DayOneBackup {
                     const maxTextLength = 50;
                     rows.forEach((row) => {
                         const latest = row;
-                        const text = latest.ZTEXT.length > maxTextLength ? latest.ZTEXT.substr(0, maxTextLength) + '...' : latest.ZTEXT;
+                        const text = latest.ZMARKDOWNTEXT.length > maxTextLength ? latest.ZMARKDOWNTEXT.substr(0, maxTextLength) + '...' : latest.ZMARKDOWNTEXT;
                         console.log(`----------\nEntry, Date: ${latest.ZGREGORIANYEAR}-${latest.ZGREGORIANMONTH}-${latest.ZGREGORIANDAY}\nText: '${text}'`);
                     });
                 });

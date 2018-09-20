@@ -46,7 +46,7 @@ interface EntryRow {
     ZGREGORIANYEAR: number;
     ZGREGORIANMONTH: number;
     ZGREGORIANDAY: number;
-    ZTEXT: string;
+    ZMARKDOWNTEXT: string;
 }
 
 const LATEST_ENTRY_SQL = `SELECT ZGREGORIANYEAR, ZGREGORIANMONTH, ZGREGORIANDAY, ZTEXT FROM ZENTRY WHERE ZGREGORIANYEAR >=${(new Date()).getFullYear()} ORDER BY ZGREGORIANMONTH DESC, ZGREGORIANDAY DESC LIMIT 3;`;
@@ -222,7 +222,7 @@ class DayOneBackup {
                 const maxTextLength = 50;
                 rows.forEach((row) => {
                     const latest = row as EntryRow;
-                    const text = latest.ZTEXT.length > maxTextLength ? latest.ZTEXT.substr(0, maxTextLength) + '...' : latest.ZTEXT;
+                    const text = latest.ZMARKDOWNTEXT.length > maxTextLength ? latest.ZMARKDOWNTEXT.substr(0, maxTextLength) + '...' : latest.ZMARKDOWNTEXT;
                     console.log(`----------\nEntry, Date: ${latest.ZGREGORIANYEAR}-${latest.ZGREGORIANMONTH}-${latest.ZGREGORIANDAY}\nText: '${text}'`);
                 });
             });
