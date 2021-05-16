@@ -95,12 +95,15 @@ class DayOneBackup {
     }
 
     private async _backup() {
-        await this._prepareBackupSource();
+        // await this._prepareBackupSource();
         await this._prepareBackupDest();
         await this._backupFiles();
         await this._displayLatestEntry();
     }
 
+    /**
+     * @deprecated
+     */
     private async _prepareBackupSource() {
         console.log('Preparing backup source ...');
 
@@ -184,10 +187,7 @@ class DayOneBackup {
         const photosBackupPath = LibPath.join(this._backupDest, DAYONE_PHOTOS_NAME);
 
         await copydirp(DAYONE_PHOTOS, photosBackupPath, (stat: 'file' | 'directory', filepath: string, filename: string) => {
-            if (filename === '.DS_Store') {
-                return false;
-            }
-            return true;
+            return filename !== '.DS_Store';
         });
         console.log('Photo files copied, start packing & compressing photo files ...');
 
@@ -240,5 +240,5 @@ process.on('uncaughtException', (error) => {
 });
 
 process.on('unhandledRejection', (error) => {
-    console.error(`Process on unhandledRejection error = ${error.stack}`);
+    console.error(`Process on unhandledRejection error`, error);
 });

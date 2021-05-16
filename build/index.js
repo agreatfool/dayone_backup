@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -80,12 +81,15 @@ class DayOneBackup {
     }
     _backup() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._prepareBackupSource();
+            // await this._prepareBackupSource();
             yield this._prepareBackupDest();
             yield this._backupFiles();
             yield this._displayLatestEntry();
         });
     }
+    /**
+     * @deprecated
+     */
     _prepareBackupSource() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Preparing backup source ...');
@@ -159,10 +163,7 @@ class DayOneBackup {
             console.log('DB files done ...');
             const photosBackupPath = LibPath.join(this._backupDest, DAYONE_PHOTOS_NAME);
             yield copydirp(DAYONE_PHOTOS, photosBackupPath, (stat, filepath, filename) => {
-                if (filename === '.DS_Store') {
-                    return false;
-                }
-                return true;
+                return filename !== '.DS_Store';
             });
             console.log('Photo files copied, start packing & compressing photo files ...');
             yield targzp({
@@ -207,6 +208,6 @@ process.on('uncaughtException', (error) => {
     console.error(`Process on uncaughtException error = ${error.stack}`);
 });
 process.on('unhandledRejection', (error) => {
-    console.error(`Process on unhandledRejection error = ${error.stack}`);
+    console.error(`Process on unhandledRejection error`, error);
 });
 //# sourceMappingURL=index.js.map

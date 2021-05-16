@@ -9,6 +9,9 @@
   "bin": {
     "dayone-backup": "./build/index.js"
   },
+  "engines": {
+    "node": ">=14 <15"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/agreatfool/dayone_backup.git"
